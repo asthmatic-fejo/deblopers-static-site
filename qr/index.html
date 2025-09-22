@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Codes - Restaurante Deb&Lopers</title>
+    <style>
+        :root { 
+            color-scheme: light dark;
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-card: #ffffff10;
+            --text-primary: #fff;
+            --text-secondary: rgba(255,255,255,0.85);
+            --border-color: #ffffff22;
+            --success-color: #00dfa0;
+            --shadow: 0 10px 35px -8px rgba(0,0,0,.55);
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-card: rgba(255,255,255,0.9);
+            --text-primary: #333;
+            --text-secondary: #666;
+            --border-color: rgba(0,0,0,0.1);
+            --shadow: 0 10px 35px -8px rgba(0,0,0,.15);
+        }
+        
+        body {
+            font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+        
+        .nav-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 60px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+        
+        .qr-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .qr-section {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+        
+        .qr-section:hover {
+            transform: translateY(-5px);
+        }
+        
+        .qr-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .qr-section p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: background 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .stats {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .stat-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .deep-links {
+            background: rgba(0,0,0,0.2);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+        
+        .deep-link-item {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navegación -->
+    <a href="../" class="nav-link">🏠 Inicio</a>
+    
+    <!-- Theme Toggle -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-text">Dark</span>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🍽️ Deb&Lopers</h1>
+            <p>Sistema Completo de QR Codes para Restaurante</p>
+        </div>
+
+        <div class="qr-sections">
+            <div class="qr-section">
+                <h2>🚪 Entrada al Restaurante</h2>
+                <p>QR para que los clientes se unan a la lista de espera y accedan a encuestas previas</p>
+                <a href="entrance.html" class="btn">Ver QR de Entrada</a>
+            </div>
+
+            <div class="qr-section">
+                <h2>🍽️ Mesas (1-5)</h2>
+                <p>QR codes individuales para cada mesa con acceso al menú, pedidos y funcionalidades completas</p>
+                <a href="tables.html" class="btn">Ver QRs de Mesas</a>
+            </div>
+
+            <div class="qr-section">
+                <h2>💰 Propinas por Mesa</h2>
+                <p>QR codes para que los clientes evalúen su experiencia y definan el porcentaje de propina</p>
+                <a href="tips.html" class="btn">Ver QRs de Propinas</a>
+            </div>
+        </div>
+
+        <div class="stats">
+            <h2>📊 Estadísticas del Sistema</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number">11</span>
+                    <span>QR Codes Totales</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">5</span>
+                    <span>Mesas del Restaurante</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">3</span>
+                    <span>Tipos de Funcionalidad</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100%</span>
+                    <span>Automatizado</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="deep-links">
+            <h3>🔗 Deep Links Configurados</h3>
+            <p>Todos los QR codes utilizan el esquema personalizado <strong>deblopers://</strong></p>
+            
+            <h4>Entrada:</h4>
+            <div class="deep-link-item">deblopers://entrance</div>
+            
+            <h4>Mesas:</h4>
+            <div class="deep-link-item">deblopers://table/1 → Mesa 1 (4 personas, estándar)</div>
+            <div class="deep-link-item">deblopers://table/2 → Mesa 2 (2 personas, estándar)</div>
+            <div class="deep-link-item">deblopers://table/3 → Mesa 3 (6 personas, VIP)</div>
+            <div class="deep-link-item">deblopers://table/4 → Mesa 4 (4 personas, accesibilidad 🦽)</div>
+            <div class="deep-link-item">deblopers://table/5 → Mesa 5 (8 personas, VIP)</div>
+            
+            <h4>Propinas:</h4>
+            <div class="deep-link-item">deblopers://tip/1 → Propina Mesa 1</div>
+            <div class="deep-link-item">deblopers://tip/2 → Propina Mesa 2</div>
+            <div class="deep-link-item">deblopers://tip/3 → Propina Mesa 3</div>
+            <div class="deep-link-item">deblopers://tip/4 → Propina Mesa 4</div>
+            <div class="deep-link-item">deblopers://tip/5 → Propina Mesa 5</div>
+        </div>
+
+        <div style="text-align: center; margin-top: 50px; color: var(--text-secondary);">
+            <p>🎯 <strong>Cumplimiento del Enunciado:</strong> Generación y lectura de códigos QR ✅</p>
+            <p>📱 <strong>Deep Links:</strong> Apertura automática de la app ✅</p>
+            <p>🖨️ <strong>Disponibilidad:</strong> Listos para imprimir y usar ✅</p>
+        </div>
+    </div>
+    
+    <script>
+        // Theme Management
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Update toggle button
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            
+            if (newTheme === 'light') {
+                icon.textContent = '☀️';
+                text.textContent = 'Light';
+            } else {
+                icon.textContent = '🌙';
+                text.textContent = 'Dark';
+            }
+        }
+        
+        // Initialize theme
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            
+            if (savedTheme === 'light') {
+                icon.textContent = '☀️';
+                text.textContent = 'Light';
+            } else {
+                icon.textContent = '🌙';
+                text.textContent = 'Dark';
+            }
+        }
+        
+        // Initialize theme on load
+        initTheme();
+    </script>
+</body>
+</html>

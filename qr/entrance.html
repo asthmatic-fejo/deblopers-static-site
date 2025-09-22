@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR - Entrada al Restaurante | Deb&Lopers</title>
+    <style>
+        :root { 
+            color-scheme: light dark;
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-card: #ffffff10;
+            --text-primary: #fff;
+            --text-secondary: rgba(255,255,255,0.85);
+            --border-color: #ffffff22;
+            --success-color: #00dfa0;
+            --shadow: 0 10px 35px -8px rgba(0,0,0,.55);
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-card: rgba(255,255,255,0.9);
+            --text-primary: #333;
+            --text-secondary: #666;
+            --border-color: rgba(0,0,0,0.1);
+            --shadow: 0 10px 35px -8px rgba(0,0,0,.15);
+        }
+        
+        body {
+            font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif;
+            text-align: center;
+            padding: 20px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+        
+        .nav-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .qr-container {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid var(--border-color);
+        }
+        
+        .qr-title {
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+        
+        .qr-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+        
+        .qr-image {
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            margin: 25px 0;
+        }
+        
+        .deep-link {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            color: var(--text-secondary);
+            margin: 20px 0;
+            font-size: 16px;
+        }
+        
+        .instructions {
+            color: var(--text-secondary);
+            font-size: 16px;
+            line-height: 1.6;
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .instructions strong {
+            color: var(--text-primary);
+        }
+        
+        @media print {
+            body { background: white; color: black; }
+            .qr-container { box-shadow: none; }
+            .theme-toggle, .nav-link { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navegación -->
+    <a href="index.html" class="nav-link">🔙 QR Principal</a>
+    
+    <!-- Theme Toggle -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-text">Dark</span>
+    </div>
+
+    <div class="qr-container">
+        <h1 class="qr-title">🚪 ENTRADA AL RESTAURANTE</h1>
+        <p class="qr-subtitle">Escanea para unirte a la lista de espera</p>
+        
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=deblopers://entrance" 
+             alt="QR Entrada Restaurante" 
+             class="qr-image"
+             width="300" 
+             height="300">
+        
+        <div class="deep-link">
+            deblopers://entrance
+        </div>
+        
+        <div class="instructions">
+            <strong>📱 Instrucciones:</strong><br>
+            1. Escanea este QR con la cámara de tu celular<br>
+            2. Se abrirá automáticamente la app Deb&Lopers<br>
+            3. Podrás unirte a la lista de espera<br>
+            4. También acceder a encuestas anteriores<br><br>
+            
+            <strong>✨ Funcionalidades:</strong><br>
+            • Lista de espera automática<br>
+            • Acceso a resultados de encuestas<br>
+            • Notificaciones cuando tu mesa esté lista<br>
+            • Solo para clientes anónimos y registrados
+        </div>
+    </div>
+    
+    <script>
+        // Theme Management
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            
+            if (newTheme === 'light') {
+                icon.textContent = '☀️';
+                text.textContent = 'Light';
+            } else {
+                icon.textContent = '🌙';
+                text.textContent = 'Dark';
+            }
+        }
+        
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            
+            if (savedTheme === 'light') {
+                icon.textContent = '☀️';
+                text.textContent = 'Light';
+            } else {
+                icon.textContent = '🌙';
+                text.textContent = 'Dark';
+            }
+        }
+        
+        initTheme();
+    </script>
+</body>
+</html>
