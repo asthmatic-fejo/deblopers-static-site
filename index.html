@@ -217,12 +217,24 @@
 
       async function tryAvatar(email, explicitUrl){
         avatarStatus.classList.remove('hidden');
+        console.log('tryAvatar iniciado para:', email, 'URL explícita:', explicitUrl);
+        
         if(explicitUrl) {
+          console.log('Probando URL explícita:', explicitUrl);
           const ok = await loadImage(explicitUrl);
-          if(ok) return explicitUrl;
+          if(ok) {
+            console.log('✅ URL explícita funcionó:', explicitUrl);
+            return explicitUrl;
+          } else {
+            console.log('❌ URL explícita falló:', explicitUrl);
+          }
         }
+        
         const base = `https://${projectRef}.supabase.co/storage/v1/object/public/${bucket}/`;
         const baseName = sanitizeEmail(email);
+        console.log('Base URL:', base);
+        console.log('BaseName sanitizado:', baseName);
+        
         // El path correcto incluye la subcarpeta 'avatars' dentro del bucket 'avatars'
         const candidates = [
           base + `avatars/${baseName}.png`, 
@@ -233,10 +245,21 @@
           base + baseName + '.jpg', 
           base + baseName + '.jpeg'
         ];
+        
+        console.log('URLs candidatas:', candidates);
+        
         for(const url of candidates){
+          console.log('Probando URL:', url);
           const ok = await loadImage(url);
-          if(ok) return url;
+          if(ok) {
+            console.log('✅ Avatar encontrado en:', url);
+            return url;
+          } else {
+            console.log('❌ No encontrado en:', url);
+          }
         }
+        
+        console.log('❌ No se encontró avatar en ninguna URL');
         return null;
       }
 
@@ -252,12 +275,20 @@
       async function init(){
         const params = parseParams();
         const token = params.access_token || params.token || '';
+        const code = params.code || '';
         let email = params.email || '';
         let avatarClaim = null;
         
         // Debug: mostrar parámetros recibidos
         console.log('Parámetros de URL:', params);
         console.log('Token recibido:', token ? 'SÍ' : 'NO');
+        console.log('Code recibido:', code ? 'SÍ' : 'NO');
+        
+        // Si tenemos un code pero no token, necesitamos hacer el intercambio
+        if(code && !token) {
+          console.log('Se recibió code, pero necesitamos intercambiarlo por token');
+          console.log('Por ahora, mostraremos la info básica con el email del parámetro');
+        }
         
         if(token){
           const decoded = decodeJwt(token);
@@ -281,7 +312,9 @@
           userInfo.classList.remove('hidden');
           emailEl.textContent = email;
           try {
+            console.log('Intentando cargar avatar para:', email);
             const avatarUrl = await tryAvatar(email, avatarClaim);
+            console.log('Resultado búsqueda avatar:', avatarUrl);
             if(avatarUrl){
               avatarImg.src = avatarUrl;
               avatarImg.style.display='block';
@@ -293,11 +326,13 @@
               avatarSkeleton.classList.remove('skeleton');
             }
           } catch(e){
+            console.error('Error cargando avatar:', e);
             errorBox.textContent = 'No se pudo cargar el avatar.';
             errorBox.classList.remove('hidden');
             avatarSkeleton.classList.remove('skeleton');
           }
         } else {
+          console.log('No se encontró email, ocultando info de usuario');
           userInfo.classList.add('hidden');
         }
       }
