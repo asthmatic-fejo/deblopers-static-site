@@ -254,15 +254,29 @@
         const token = params.access_token || params.token || '';
         let email = params.email || '';
         let avatarClaim = null;
+        
+        // Debug: mostrar parámetros recibidos
+        console.log('Parámetros de URL:', params);
+        console.log('Token recibido:', token ? 'SÍ' : 'NO');
+        
         if(token){
           const decoded = decodeJwt(token);
+          console.log('JWT decodificado:', decoded);
           if(decoded){
             if(!email && decoded.email) email = decoded.email;
             if(decoded.user_metadata && decoded.user_metadata.avatar_url) {
               avatarClaim = decoded.user_metadata.avatar_url;
             }
+            // También verificar en raw_user_meta_data por si acaso
+            if(!avatarClaim && decoded.raw_user_meta_data && decoded.raw_user_meta_data.avatar_url) {
+              avatarClaim = decoded.raw_user_meta_data.avatar_url;
+            }
           }
         }
+        
+        console.log('Email extraído:', email);
+        console.log('Avatar claim:', avatarClaim);
+        
         if(email){
           userInfo.classList.remove('hidden');
           emailEl.textContent = email;
