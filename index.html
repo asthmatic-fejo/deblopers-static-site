@@ -223,7 +223,16 @@
         }
         const base = `https://${projectRef}.supabase.co/storage/v1/object/public/${bucket}/`;
         const baseName = sanitizeEmail(email);
-        const candidates = [base+baseName+'.png', base+baseName+'.jpg', base+baseName+'.jpeg'];
+        // El path correcto incluye la subcarpeta 'avatars' dentro del bucket 'avatars'
+        const candidates = [
+          base + `avatars/${baseName}.png`, 
+          base + `avatars/${baseName}.jpg`, 
+          base + `avatars/${baseName}.jpeg`,
+          // Fallback: buscar también en la raíz del bucket por compatibilidad
+          base + baseName + '.png', 
+          base + baseName + '.jpg', 
+          base + baseName + '.jpeg'
+        ];
         for(const url of candidates){
           const ok = await loadImage(url);
           if(ok) return url;
